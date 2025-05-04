@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { JwtUser } from 'src/types/userType';
 
 @Injectable()
 export class UsersService {
@@ -15,16 +16,22 @@ export class UsersService {
   create(createUserDto: CreateUserDto) {
     this.usersRepository.save(createUserDto);
 
-    return 'This action adds a new user';
+    return '';
   }
 
   findAll() {
-    
-    return this.usersRepository.find({});;
+    return this.usersRepository.find({});
+  }
+
+  getInfo(user: JwtUser) {
+    return this.usersRepository.findOne({ where: { email: user.email } });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return `This action returns a #${id} user`
+  }
+  findOneByEmail(email: string) {
+        return this.usersRepository.findOne({ where: { email } });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -1,0 +1,9 @@
+###
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "john@example.com",
+    "password": "Password123"
+}
