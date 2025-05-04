@@ -7,3 +7,21 @@ Content-Type: application/json
     "email": "john@example.com",
     "password": "Password123"
 }
+
+###
+# @name getProfile
+GET http://localhost:3000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjM3MTc4NiwiZXhwIjoxNzQ2MzcyMzg2fQ.NNNNL_iBOr6Jw8sTWAETEk4kVkTzd86qNcQMWfAiRPU
+
+
+###
+# @name register
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "username": "mihail as",
+  "nickname": "mik3",
+  "email": "mik3@example.com",
+  "password": "Password123"
+}
