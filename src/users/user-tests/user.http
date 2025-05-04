@@ -1,0 +1,17 @@
+###
+# @name userCreation
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "nickname": "john",
+  "email": "john@example.com",
+  "password": "Password123",
+  "full_name": "John Doe",
+  "avatar": "https://example.com/avatar.jpg"
+}
+
+###
+# @name getUsers
+GET http://localhost:3000/users
