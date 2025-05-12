@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 # @name getProfile
 GET http://localhost:3000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjM3MTc4NiwiZXhwIjoxNzQ2MzcyMzg2fQ.NNNNL_iBOr6Jw8sTWAETEk4kVkTzd86qNcQMWfAiRPU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjYzMjY3MCwiZXhwIjoxNzQ2NjMzMjcwfQ.3hqL-HhNNtQkwZ958o6mSNI5dplu8qOkXF3a95QwRcQ
 
 
 ###
@@ -25,3 +25,7 @@ Content-Type: application/json
   "email": "mik3@example.com",
   "password": "Password123"
 }
+
+###
+# @name users
+GET http://localhost:3000/users

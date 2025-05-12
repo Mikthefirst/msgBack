@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,7 +23,7 @@ import { AuthModule } from './auth/auth.module';
       logging: true,
       entities: [User],
     }),
-    UsersModule, AuthModule
+    UsersModule, AuthModule, ConversationsModule, MessagesModule
   ],
   controllers: [],
   providers: [],
