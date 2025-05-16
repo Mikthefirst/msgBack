@@ -1,3 +1,4 @@
+//conv-to-user.entity.ts
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,

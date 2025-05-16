@@ -27,10 +27,10 @@ export class User {
   full_name?: string;
 
   @IsStrongPassword({
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers:1
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
   })
   @Column()
   password: string;
@@ -40,8 +40,8 @@ export class User {
 
   @Column({
     type: 'enum',
-      enum: Role,
-    default: Role.USER
+    enum: Role,
+    default: Role.USER,
   })
   role: Role;
 

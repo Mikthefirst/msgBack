@@ -6,6 +6,10 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
+import { Conversation } from './conversations/entities/conversation.entity';
+import { ConversationToUser } from './conversations/entities/conv-to-user.entity';
+import { ConversationLastMessage } from './conversations/entities/lastmsg.entity';
+import { Message } from './messages/entities/message.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,7 +25,7 @@ import { MessagesModule } from './messages/messages.module';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: true,
-      entities: [User],
+      entities: [User, Message, Conversation, ConversationToUser],
     }),
     UsersModule, AuthModule, ConversationsModule, MessagesModule
   ],

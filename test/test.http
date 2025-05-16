@@ -1,0 +1,36 @@
+@baseUrl = http://localhost:3000
+@api=api/
+###
+# @name AddConvChat
+POST {{baseUrl}}/conversations/create-chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTc0NzQwODAyNSwiZXhwIjoxNzQ3NDA4NjI1fQ.NrXnTM6bDQRHWgwR8Lf_JnZVqGFuKrvl3se8Q7vhfjo
+Content-Type: application/json
+
+{
+    "user2Id": "db2f7a53-8105-4a63-92d8-bb7b8f415bcd"
+}
+
+
+###
+# @name ConversationGet
+GET {{baseUrl}}{{api}}/conversations
+
+###
+# @name MsgGetByConv
+GET {{baseUrl}}/messages/:conversationId
+
+###
+# @name AddMsgToConv
+POST {{baseUrl}}/messages/:conversationId
+
+###
+# @name MarkMsgAsRead
+POST {{baseUrl}}/messages/:conversationId/read
+
+Method	Endpoint	Назначение
+GET	/api/conversations	Получить список бесед
+GET	/api/messages/:conversationId	Получить сообщения из беседы
+POST	/api/messages/:conversationId	Отправить сообщение
+POST	/api/messages/:conversationId/read	Отметить сообщение как прочитанное
+POST	/api/conversations (опционально)	Создать новую беседу
+POST	/api/messages/:conversationId/attachments *	Отправка медиафайлов

@@ -1,9 +1,13 @@
+//conversation.entity.ts
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 @Entity({ name: 'conversations' })
 export class Conversation {
@@ -32,6 +36,10 @@ export class Conversation {
     nullable: true,
   })
   UpdatedAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'created_by_id' })
+  createdBy: User;
 }
 
 

@@ -24,6 +24,8 @@ export class AuthController {
       //sameSite: "strict",
     });
     res.cookie('email', logindata.email);
+    res.cookie('id', logindata.id);
+
 
     return { message: 'Login successful', token: logindata.access_token };
   }

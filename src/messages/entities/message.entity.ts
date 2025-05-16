@@ -40,6 +40,9 @@ export class Message {
   @Column({ nullable: true })
   fileUrl?: string;
 
+  @Column({ nullable: true, default: false })
+  read?: boolean;
+
   @Column({ nullable: true })
   imageUrl?: string;
 

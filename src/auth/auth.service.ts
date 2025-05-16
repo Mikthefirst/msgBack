@@ -1,5 +1,5 @@
 import { JwtUser } from 'src/types/userType';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -16,17 +16,27 @@ export class AuthService {
     console.log(email, pass);
     const user = await this.usersService.findOneByEmail(email);
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      const { id, email, username, role } = user;
+      return { id, email, username, role };
     }
     throw new BadRequestException('wrong credentials');
   }
 
   async login(user: JwtUser) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const checkUser = await this.usersService.findOneByEmail(user.email);
+    if (!checkUser) {
+      throw new NotFoundException('User not found');
+    }
+  
+    const payload = {
+      email: checkUser.email,
+      sub: checkUser.id,
+      role: checkUser.role,
+      username: checkUser.username,
+    };
     return {
-      email: user.email,
-      id: user.id,
+      email: checkUser.email,
+      id: checkUser.id,
       access_token: this.jwtService.sign(payload),
     };
   }
@@ -47,7 +57,12 @@ export class AuthService {
       password: createUserDto.password,
     });
     if (typeof user === 'object') {
-      const payload = { email: user.email, sub: user.id };
+      const payload = {
+        email: user.email,
+        sub: user.id,
+        username: user.username,
+        role: user.role
+      };
       const access_token = this.jwtService.sign(payload);
 
       return {
