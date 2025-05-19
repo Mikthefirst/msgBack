@@ -8,7 +8,6 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { Conversation } from './conversations/entities/conversation.entity';
 import { ConversationToUser } from './conversations/entities/conv-to-user.entity';
-import { ConversationLastMessage } from './conversations/entities/lastmsg.entity';
 import { Message } from './messages/entities/message.entity';
 @Module({
   imports: [

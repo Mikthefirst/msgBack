@@ -9,15 +9,15 @@ import { CreateChatDto } from './dto/create-chat.dto';
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
+  @Get('for-user')
+  async getConversations(@Req() req: any) {
+    const conv = this.conversationsService.getConversation(req.user.id);
+    //console.log(conv);
+    return conv;
+  }
+
   @Post('create-chat')
-  async createDirect(
-    @Body() dto: CreateChatDto,
-    @Req() req: any,
-  ) {
-   
-    return this.conversationsService.createDirectConversation(
-      req.user.id,
-      dto,
-    );
+  async createDirect(@Body() dto: CreateChatDto, @Req() req: any) {
+    return this.conversationsService.createDirectConversation(req.user.id, dto);
   }
 }

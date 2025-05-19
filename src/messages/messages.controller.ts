@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
-  @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messagesService.create(createMessageDto);
-  }
-
+  //сделать query параметром, передавать насколько далеко ушли от старта первые 100(0-100 сообщений), потом 100-200, и т.д
   @Get()
-  findAll() {
-    return this.messagesService.findAll();
+  async getMessagesForConf() {}
+
+  @Post('add-many')
+  async sandMessages(
+    @Body() dtos: Array<CreateMessageDto & { userId: string }>,
+  ) {
+    return this.messagesService.addManyMsg(dtos);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messagesService.findOne(+id);
-  }
+  @Post('add')
+  async sendMessage(@Body() dto: CreateMessageDto, @Req() req) {
+    const userId: string = req.user?.id;
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
+    return this.messagesService.addMsg(userId, dto);
   }
 }

@@ -13,7 +13,8 @@ Content-Type: application/json
 
 ###
 # @name ConversationGet
-GET {{baseUrl}}{{api}}/conversations
+GET {{baseUrl}}/conversations/for-user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTc0NzY0NDg4NywiZXhwIjoxNzQ3NjQ1NDg3fQ.03YI6pgsn4NLKmml0Z3B3-q7uaI5cLCyIQYJ1YO8VOg
 
 ###
 # @name MsgGetByConv
@@ -21,7 +22,91 @@ GET {{baseUrl}}/messages/:conversationId
 
 ###
 # @name AddMsgToConv
-POST {{baseUrl}}/messages/:conversationId
+POST {{baseUrl}}/messages/add
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTc0NzY0NDg4NywiZXhwIjoxNzQ3NjQ1NDg3fQ.03YI6pgsn4NLKmml0Z3B3-q7uaI5cLCyIQYJ1YO8VOg
+Content-Type: application/json
+ 
+{
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "Good morning! How are you today?",
+    "type": "text"
+}
+
+###
+# @name Addmanymsg
+POST {{baseUrl}}/messages/add-many
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJzdWIiOiJkZGY5Y2NhNC1lNTJhLTRmN2YtYjdmMi01YWRmZWMwMzgwMzIiLCJyb2xlIjoidXNlciIsInVzZXJuYW1lIjoiam9obmRvZSIsImlhdCI6MTc0NzY0NzA0NSwiZXhwIjoxNzQ3NjQ3NjQ1fQ.tzMJUlre6r9RpS-wY4PBy3xEtiz0Q3cw9hsqcnzcB40
+Content-Type: application/json
+
+[
+  {
+    "userId": "db2f7a53-8105-4a63-92d8-bb7b8f415bcd",
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "Good morning! How are you today?",
+    "type": "text"
+  },
+  {
+    "userId": "ddf9cca4-e52a-4f7f-b7f2-5adfec038032",
+    "conversationId": "c8d21f8d-5d12-4e50-ac3b-551c1d4b683f",
+    "content": "Check out this beautiful landscape",
+    "type": "image",
+    "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+  },
+  {
+    "userId": "6e1c9137-8c72-4437-a5f6-f25a991327ed",
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "Here's the project report we discussed",
+    "type": "file",
+    "fileUrl": "https://www.africau.edu/images/default/sample.pdf"
+  },
+  {
+    "userId": "db2f7a53-8105-4a63-92d8-bb7b8f415bcd",
+    "conversationId": "c8d21f8d-5d12-4e50-ac3b-551c1d4b683f",
+    "content": "Meeting reminder at 2pm tomorrow",
+    "type": "text"
+  },
+  {
+    "userId": "ddf9cca4-e52a-4f7f-b7f2-5adfec038032",
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "Look at this cute dog!",
+    "type": "image",
+    "imageUrl": "https://images.unsplash.com/photo-1561037404-61cd46aa615b"
+  },
+  {
+    "userId": "6e1c9137-8c72-4437-a5f6-f25a991327ed",
+    "conversationId": "c8d21f8d-5d12-4e50-ac3b-551c1d4b683f",
+    "content": "Please review this document",
+    "type": "file",
+    "fileUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+  },
+  {
+    "userId": "db2f7a53-8105-4a63-92d8-bb7b8f415bcd",
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "Are you coming to the team lunch?",
+    "type": "text"
+  },
+  {
+    "userId": "ddf9cca4-e52a-4f7f-b7f2-5adfec038032",
+    "conversationId": "c8d21f8d-5d12-4e50-ac3b-551c1d4b683f",
+    "content": "Sunset from my vacation",
+    "type": "image",
+    "imageUrl": "https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6"
+  },
+  {
+    "userId": "6e1c9137-8c72-4437-a5f6-f25a991327ed",
+    "conversationId": "bf7124ce-980d-42bd-9db4-914aad6a9dd7",
+    "content": "The budget spreadsheet is ready",
+    "type": "file",
+    "fileUrl": "https://file-examples.com/storage/fe564c1e0362dc676a1b341/2017/02/file_example_XLSX_10.xlsx"
+  },
+  {
+    "userId": "db2f7a53-8105-4a63-92d8-bb7b8f415bcd",
+    "conversationId": "c8d21f8d-5d12-4e50-ac3b-551c1d4b683f",
+    "content": "Thanks for your help with this!",
+    "type": "text"
+  }
+]
+
 
 ###
 # @name MarkMsgAsRead

@@ -59,11 +59,6 @@ export class Message {
   })
   UpdatedAt: Date;
 
-  //index
-
-  @Index()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  timestampIndex: Date;
 }
 
 
