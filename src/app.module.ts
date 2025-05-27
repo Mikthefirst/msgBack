@@ -9,6 +9,8 @@ import { MessagesModule } from './messages/messages.module';
 import { Conversation } from './conversations/entities/conversation.entity';
 import { ConversationToUser } from './conversations/entities/conv-to-user.entity';
 import { Message } from './messages/entities/message.entity';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,9 +28,13 @@ import { Message } from './messages/entities/message.entity';
       logging: true,
       entities: [User, Message, Conversation, ConversationToUser],
     }),
-    UsersModule, AuthModule, ConversationsModule, MessagesModule
+    UsersModule,
+    AuthModule,
+    ConversationsModule,
+    MessagesModule,
+    ChatModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [ChatGateway],
 })
 export class AppModule {}
