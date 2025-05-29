@@ -1,5 +1,5 @@
 // chat.gateway.ts
-import { forwardRef, Inject } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -10,6 +10,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { Message } from 'src/messages/entities/message.entity';
+import { JwtService } from '@nestjs/jwt';
+
 
 @WebSocketGateway({
   cors: {
@@ -20,6 +22,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @Inject(forwardRef(() => ChatService))
     private readonly chatService: ChatService,
+    private jwtService: JwtService,
   ) {}
 
   @WebSocketServer()
@@ -40,15 +43,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join-room')
   handleJoinRoom(client: Socket, conversationId: string) {
-    const prevRoom = this.userRooms.get(client.id);
-    if (prevRoom) {
-      client.leave(prevRoom);
+    try {
+      const cookieHeader = client.handshake.headers.cookie;
+      let accessToken = null;
+      let tokenCookie, cookies;
+      if (cookieHeader) {
+        cookies = cookieHeader.split(';').map((c) => c.trim());
+        tokenCookie = cookies.find((c) => c.startsWith('access_token='));
+
+        if (tokenCookie) {
+          accessToken = tokenCookie.split('=')[1];
+        }
+      }
+
+      const decodedToken = this.jwtService.decode(accessToken);
+      if (decodedToken) {
+        const prevRoom = this.userRooms.get(client.id);
+        if (prevRoom) {
+          client.leave(prevRoom);
+        }
+
+        client.join(conversationId);
+        this.userRooms.set(client.id, conversationId);
+      }
+     
+    } catch (error) {
+      new ForbiddenException("wrong token")
     }
-
-    client.join(conversationId);
-    this.userRooms.set(client.id, conversationId);
-
-    console.log(`Client ${client.id} joined room ${conversationId}`);
+    //console.log('join-room: ', client.handshake.headers.cookie);
+  
   }
 
   @SubscribeMessage('leave-room')
@@ -72,14 +95,38 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     payload: { userId: string; conversationId: string; content: string },
   ): Promise<void> {
-    const { userId, content } = payload;
-    const conversationId = this.userRooms.get(client.id);
+    try {
+      const cookieHeader = client.handshake.headers.cookie;
+      let accessToken = null;
+      let tokenCookie, cookies;
+      if (cookieHeader) {
+        cookies = cookieHeader.split(';').map((c) => c.trim());
+        tokenCookie = cookies.find((c) => c.startsWith('access_token='));
 
-    console.log("payload:",payload, "\nconvID:", conversationId)
-    const savedMessage: Message = await this.chatService.sendMessage(
-      userId,
-      conversationId,
-      content,
-    );
+        if (tokenCookie) {
+          accessToken = tokenCookie.split('=')[1];
+        }
+      }
+
+      const decodedToken = this.jwtService.decode(accessToken);
+      if (decodedToken) {
+       
+        const { content } = payload;
+        const conversationId = this.userRooms.get(client.id);
+
+        console.log('payload:', payload, '\nconvID:', conversationId);
+        const savedMessage: Message = await this.chatService.sendMessage(
+          decodedToken.sub,
+          conversationId,
+          content,
+        );
+      
+      }
+    } catch (error) {
+      new ForbiddenException('wrong token');
+    }
+
+
+    
   }
 }
