@@ -57,4 +57,9 @@ export class ConversationsController {
   ) {
     return this.conversationsService.makeAdmin(groupId, userId, req.user.id);
   }
+
+  @Get('direct-users')
+  async getUsersWithDirectChats(@Req() req: any) {
+    return this.conversationsService.getUsersWithDirectChats(req.user.id);
+  }
 }

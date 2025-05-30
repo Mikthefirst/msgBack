@@ -3,7 +3,7 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { CreateChatDto } from './dto/create-chat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Conversation } from './entities/conversation.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ConversationToUser } from './entities/conv-to-user.entity';
 import { User } from 'src/users/entities/user.entity';
 import { randomUUID } from 'crypto';
@@ -75,6 +75,7 @@ export class ConversationsService {
       conversations.push({
         ...conv,
         createdBy: {
+          id: conv.createdBy.id,
           username: conv.createdBy?.username,
           nickname: conv.createdBy?.nickname,
         },
@@ -192,6 +193,35 @@ export class ConversationsService {
 
     target.isAdmin = true;
     return await this.ctuRepo.save(target);
+  }
+
+  async getUsersWithDirectChats(userId: string): Promise<User[]> {
+    const relations = await this.ctuRepo.find({
+      where: { user: { id: userId } },
+      relations: ['conversation', 'conversation.createdBy'],
+    });
+
+    const directConversations = relations
+      .filter((r) => !r.conversation.isGroup)
+      .map((r) => r.conversation.id);
+
+    const convToUsers = await this.ctuRepo.find({
+      where: {
+        conversation: { id: In(directConversations) },
+      },
+      relations: ['user', 'conversation'],
+    });
+
+    const users = convToUsers
+      .filter((rel) => rel.user.id !== userId)
+      .map((rel) => rel.user);
+
+    // Удалить дубликаты по id
+    const uniqueUsers = Array.from(
+      new Map(users.map((u) => [u.id, u])).values(),
+    );
+
+    return uniqueUsers;
   }
 
   //helpers
