@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConversationToUser } from './entities/conv-to-user.entity';
 import { ConversationLastMessage } from './entities/lastmsg.entity';
 import { UsersModule } from 'src/users/users.module';
+import { Message } from 'src/messages/entities/message.entity';
 
 @Module({
   imports: [
@@ -13,7 +14,9 @@ import { UsersModule } from 'src/users/users.module';
     TypeOrmModule.forFeature([Conversation]),
     TypeOrmModule.forFeature([ConversationToUser]),
     TypeOrmModule.forFeature([ConversationLastMessage]),
+    TypeOrmModule.forFeature([Message]),
   ],
+  exports: [TypeOrmModule],
   controllers: [ConversationsController],
   providers: [ConversationsService],
 })

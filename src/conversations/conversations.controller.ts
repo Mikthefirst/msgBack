@@ -9,15 +9,62 @@ import { CreateChatDto } from './dto/create-chat.dto';
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
+  @Get('for-user')
+  async getConversations(@Req() req: any) {
+    const conv = this.conversationsService.getConversation(req.user.id);
+    return conv;
+  }
+
   @Post('create-chat')
-  async createDirect(
-    @Body() dto: CreateChatDto,
+  async createDirect(@Body() dto: CreateChatDto, @Req() req: any) {
+    return this.conversationsService.createDirectConversation(req.user.id, dto);
+  }
+
+  // Проверка — админ ли пользователь в группе
+  @Get('/is-group-admin/:conversationId')
+  async isAdmin(@Param('conversationId') id: string, @Req() req: any) {
+    return this.conversationsService.checkIfUserIsAdmin(req.user.id, id);
+  }
+
+  // Получить всех участников группы
+  @Get('/groups/:groupId/participants')
+  async getGroupParticipants(@Param('groupId') groupId: string) {
+    return this.conversationsService.getGroupParticipants(groupId);
+  }
+
+  // Заблокировать (забанить) пользователя в группе
+  @Post('/groups/:groupId/ban/:userId')
+  async banUser(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
     @Req() req: any,
   ) {
-   
-    return this.conversationsService.createDirectConversation(
-      req.user.id,
-      dto,
-    );
+    return this.conversationsService.banUser(groupId, userId, req.user.id);
+  }
+
+  // Выйти из группы
+  @Delete('/groups/:groupId/leave')
+  async leaveGroup(@Param('groupId') groupId: string, @Req() req: any) {
+    return this.conversationsService.leaveGroup(groupId, req.user.id);
+  }
+
+  // Назначить пользователя админом
+  @Post('/groups/:groupId/make-admin/:userId')
+  async makeAdmin(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+    @Req() req: any,
+  ) {
+    return this.conversationsService.makeAdmin(groupId, userId, req.user.id);
+  }
+
+  @Get('direct-users')
+  async getUsersWithDirectChats(@Req() req: any) {
+    return this.conversationsService.getUsersWithDirectChats(req.user.id);
+  }
+
+  @Get(':id/member-count')
+  async getMemberCount(@Param('id') conversationId: string) {
+    return this.conversationsService.getConversationMemberCount(conversationId);
   }
 }
