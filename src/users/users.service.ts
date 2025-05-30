@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { JwtUser } from 'src/types/userType';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ConversationToUser } from 'src/conversations/entities/conv-to-user.entity';
 
 @Injectable()
 export class UsersService {
@@ -57,8 +58,18 @@ export class UsersService {
 
   findOne(id: string) {
     return this.usersRepository.findOne({
-      where: { id: id }, select:
-        ["id", "username", "nickname", "email", "full_name", "avatar", "role", "CreatedAt", "UpdatedAt"]
+      where: { id: id },
+      select: [
+        'id',
+        'username',
+        'nickname',
+        'email',
+        'full_name',
+        'avatar',
+        'role',
+        'CreatedAt',
+        'UpdatedAt',
+      ],
     });
   }
   findOneByEmail(email: string) {
@@ -111,7 +122,7 @@ export class UsersService {
     if (!user) throw new NotFoundException('Пользователь не найден');
 
     // Проверяем старый пароль
-    if (user.password!==dto.currentPassword) {
+    if (user.password !== dto.currentPassword) {
       throw new UnauthorizedException('Неверный текущий пароль');
     }
     // Хешируем новый

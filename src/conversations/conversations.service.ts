@@ -337,4 +337,40 @@ export class ConversationsService {
 
     return savedGroup;
   }
+
+  //fake
+  async getCommonChats(userId1: string, userId2: string) {
+    const user1Conversations = await this.ctuRepo.find({
+      where: { user: { id: userId1 } },
+      relations: ['conversation'],
+    });
+
+    const user2Conversations = await this.ctuRepo.find({
+      where: { user: { id: userId2 } },
+      relations: ['conversation'],
+    });
+
+    const user1ConvIds = new Set(
+      user1Conversations
+        .filter((c) => c.conversation && c.conversation.id)
+        .map((c) => c.conversation.id),
+    );
+
+    const common = user2Conversations
+      .filter(
+        (c) =>
+          c.conversation &&
+          c.conversation.id &&
+          user1ConvIds.has(c.conversation.id),
+      )
+      .map((c) => ({
+        id: c.conversation.id,
+        title:
+          c.conversation.groupName?.trim() ||
+          c.conversation.group_nickname?.trim() ||
+          'Без названия',
+      }));
+
+    return common;
+  }
 }

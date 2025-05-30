@@ -100,4 +100,11 @@ export class ConversationsController {
   async getMemberCount(@Param('id') conversationId: string) {
     return this.conversationsService.getConversationMemberCount(conversationId);
   }
+
+  @Get('common/:id')
+  @UseGuards(JwtAuthGuard) // если используется авторизация
+  async getCommonChats(@Param('id') userId: string, @Req() req) {
+    const currentUserId = req.user.id;
+    return this.conversationsService.getCommonChats(currentUserId, userId);
+  }
 }
