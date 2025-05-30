@@ -95,6 +95,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client: Socket,
     payload: { userId: string; conversationId: string; content: string },
   ): Promise<void> {
+    console.log(
+      `[handleSendMessage] client.id=${client.id}, payload.content="${payload.content}", time=${new Date().toISOString()}`,
+    );
     try {
       const cookieHeader = client.handshake.headers.cookie;
       let accessToken = null;

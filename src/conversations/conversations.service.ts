@@ -1,4 +1,5 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+//conversation.service.ts
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Conversation } from './entities/conversation.entity';
@@ -58,10 +59,7 @@ export class ConversationsService {
     }
   }
 
-  async getConversation(
-    userId: string,
-  ) {
-
+  async getConversation(userId: string) {
     const convToUsers = await this.ctuRepo.find({
       where: { user: { id: userId } },
       relations: ['conversation', 'conversation.createdBy'],
@@ -96,7 +94,104 @@ export class ConversationsService {
           : null,
       });
     }
-    return conversations; 
+    return conversations;
+  }
+
+  //GroupPage
+  async checkIfUserIsAdmin(
+    userId: string,
+    conversationId: string,
+  ): Promise<{ isAdmin: boolean }> {
+    const rel = await this.ctuRepo.findOne({
+      where: {
+        user: { id: userId },
+        conversation: { id: conversationId },
+      },
+    });
+
+    return { isAdmin: rel?.isAdmin === true };
+  }
+
+  async getGroupParticipants(groupId: string) {
+    const relations = await this.ctuRepo.find({
+      where: { conversation: { id: groupId } },
+      relations: ['user'],
+    });
+
+    return relations.map((rel) => ({
+      id: rel.user.id,
+      username: rel.user.username,
+      nickname: rel.user.nickname,
+      email: rel.user.email,
+      full_name: rel.user.full_name,
+      avatar: rel.user.avatar,
+      role: rel.isAdmin ? 'admin' : 'user',
+      joinedAt: rel.joinedAt,
+      isBlocked: rel.isBlocked || false,
+    }));
+  }
+
+  async banUser(groupId: string, targetUserId: string, requesterId: string) {
+    const requester = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: requesterId },
+      },
+    });
+
+    if (!requester?.isAdmin) {
+      throw new ForbiddenException('Only admins can ban users');
+    }
+
+    const target = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: targetUserId },
+      },
+    });
+
+    if (!target) throw new NotFoundException('User is not in the group');
+
+    target.isBlocked = true;
+    return await this.ctuRepo.save(target);
+  }
+
+  async leaveGroup(groupId: string, userId: string) {
+    const rel = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: userId },
+      },
+    });
+
+    if (!rel) throw new NotFoundException('User not in group');
+
+    return await this.ctuRepo.remove(rel);
+  }
+
+  async makeAdmin(groupId: string, targetUserId: string, requesterId: string) {
+    const requester = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: requesterId },
+      },
+    });
+
+    if (!requester?.isAdmin) {
+      throw new ForbiddenException('Only admins can assign admin role');
+    }
+
+    const target = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: targetUserId },
+      },
+    });
+
+    if (!target) throw new NotFoundException('User not found');
+
+    target.isAdmin = true;
+    return await this.ctuRepo.save(target);
   }
 
   //helpers

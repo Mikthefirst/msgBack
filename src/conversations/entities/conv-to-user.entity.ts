@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  Column,
+  CreateDateColumn,
 } from 'typeorm';
 import { Conversation } from './conversation.entity';
 @Entity({ name: 'conversations_to_user' })
@@ -19,4 +21,16 @@ export class ConversationToUser {
   @ManyToOne(() => Conversation)
   @JoinColumn()
   conversation: Conversation;
+
+  @Column({ nullable: true })
+  isBlocked?: boolean;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  joinedAt: Date;
+
+  @Column({ nullable: true })
+  isAdmin?: boolean;
 }
