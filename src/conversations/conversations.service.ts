@@ -8,6 +8,7 @@ import { ConversationToUser } from './entities/conv-to-user.entity';
 import { User } from 'src/users/entities/user.entity';
 import { randomUUID } from 'crypto';
 import { Message } from 'src/messages/entities/message.entity';
+import { CreateGroupConversationDto } from './dto/create-group.dto';
 
 @Injectable()
 export class ConversationsService {
@@ -70,7 +71,7 @@ export class ConversationsService {
       throw new BadRequestException('Could not count conversation members');
     }
   }
-  
+
   async getConversation(userId: string) {
     const convToUsers = await this.ctuRepo.find({
       where: { user: { id: userId } },
@@ -262,19 +263,52 @@ export class ConversationsService {
 
     return common?.conversation ?? null;
   }
+
+  //image
+  async createGroupConversation(
+    creatorId: string,
+    dto: CreateGroupConversationDto,
+  ): Promise<Conversation> {
+    const { groupName, groupNickname, groupAvatar, participantIds } = dto;
+
+    // 1) Проверить, что у создателя валидный пользователь
+    const creator = await this.userRepo.findOne({ where: { id: creatorId } });
+    if (!creator) {
+      throw new NotFoundException('Creator not found');
+    }
+
+    // 2) Проверяем корректность participantIds (если массив не пуст)
+    let participants: User[] = [];
+    if (participantIds && participantIds.length > 0) {
+      participants = await this.userRepo.findBy({ id: In(participantIds) });
+      if (participants.length !== participantIds.length) {
+        throw new BadRequestException('One or more participants not found');
+      }
+    }
+
+    // 3) Создаём Conversation как группу
+    const group = this.convRepo.create({
+      group_nickname: groupNickname,
+      groupName,
+      groupAvatar: groupAvatar || null,
+      isGroup: true,
+      createdBy: creator,
+    });
+    const savedGroup = await this.convRepo.save(group);
+
+    // 4) Формируем записи в ConversationToUser:
+    //    - создатель (админ)
+    //    - остальные участники (не админы)
+    const allMembers = [creator, ...participants];
+    const ctuEntities = allMembers.map((user) =>
+      this.ctuRepo.create({
+        user,
+        conversation: savedGroup,
+        isAdmin: user.id === creatorId,
+      }),
+    );
+    await this.ctuRepo.save(ctuEntities);
+
+    return savedGroup;
+  }
 }
-
-
-/*
-Получить все беседы пользователя
-const userId = 'user-uuid';
-const conversations = await ConversationToUser.find({ 
-  where: { user: { id: userId } },
-  relations: ['conversation']
-});
-
-Получить последнее сообщение в беседе
-const lastMessage = await Message.findOne({
-  where: { conversation: { id: conversationId } },
-  order: { timestamp: 'DESC' }
-});*/
