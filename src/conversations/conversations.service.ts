@@ -141,7 +141,7 @@ export class ConversationsService {
       avatar: rel.user.avatar,
       role: rel.isAdmin ? 'admin' : 'user',
       joinedAt: rel.joinedAt,
-      isAdmin: rel.isAdmin||false, 
+      isAdmin: rel.isAdmin || false,
       isBlocked: rel.isBlocked || false,
     }));
   }
@@ -168,6 +168,31 @@ export class ConversationsService {
     if (!target) throw new NotFoundException('User is not in the group');
 
     target.isBlocked = true;
+    return await this.ctuRepo.save(target);
+  }
+
+  async unbanUser(groupId: string, targetUserId: string, requesterId: string) {
+    const requester = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: requesterId },
+      },
+    });
+
+    if (!requester?.isAdmin) {
+      throw new ForbiddenException('Only admins can unban users');
+    }
+
+    const target = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: groupId },
+        user: { id: targetUserId },
+      },
+    });
+
+    if (!target) throw new NotFoundException('User is not in the group');
+
+    target.isBlocked = false;
     return await this.ctuRepo.save(target);
   }
 

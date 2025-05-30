@@ -42,9 +42,6 @@ export class ConversationsController {
     return this.conversationsService.createGroupConversation(creatorId, body);
   }
 
-
-
-  
   // Проверка — админ ли пользователь в группе
   @Get('/is-group-admin/:conversationId')
   async isAdmin(@Param('conversationId') id: string, @Req() req: any) {
@@ -64,8 +61,18 @@ export class ConversationsController {
     @Param('userId') userId: string,
     @Req() req: any,
   ) {
-    console.log('ban user:', userId)
+    console.log('ban user:', userId);
     return this.conversationsService.banUser(groupId, userId, req.user.id);
+  }
+
+  @Patch('/groups/:groupId/unban/:userId')
+  async unbanUser(
+    @Param('groupId') groupId: string,
+    @Param('userId') userId: string,
+    @Req() req: any,
+  ) {
+    console.log('unban user:', userId);
+    return this.conversationsService.unbanUser(groupId, userId, req.user.id);
   }
 
   // Выйти из группы
