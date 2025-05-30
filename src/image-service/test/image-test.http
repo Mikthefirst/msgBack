@@ -1,0 +1,24 @@
+
+
+
+@serviceName = image-service
+@port = 3000
+###
+# @name AddFile
+POST http://localhost:{{port}}/{{serviceName}}/upload-avatar
+Content-Type: multipart/form-data; boundary=MyBoundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhbGlkQGdtYWlsLmNvbSIsInN1YiI6IjVkZTk0YWIxLTZkYTEtNDIyMS1iODEzLTc0NTg0ZmVjMWIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NjAwNzQ4MCwiZXhwIjoxNzQ2MDA4MDgwfQ.oJqHc_PMhsfPdg517M3vJK73G12kqTiyJ1oWaOut4jA
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="PionAlb.png"
+Content-Type: image/png
+
+< ./PionNegru.png
+--MyBoundary--
+
+###
+# @name GetImage
+GET http://localhost:{{port}}/{{serviceName}}/get-avatar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhbGlkQGdtYWlsLmNvbSIsInN1YiI6IjVkZTk0YWIxLTZkYTEtNDIyMS1iODEzLTc0NTg0ZmVjMWIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NjAwODMyMywiZXhwIjoxNzQ2MDA4OTIzfQ.T-Sd74ZmzY_ZkvVTOzzqdiasW16MEgkFMtzRaQIcbMk
+
+

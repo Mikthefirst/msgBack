@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateGroupConversationDto } from './dto/create-group.dto';
+import { multerConversationConfig } from 'src/image-service/config/file-upload.conversation.config';
 
 @Controller('conversations')
 @UseGuards(JwtAuthGuard)
@@ -20,6 +23,28 @@ export class ConversationsController {
     return this.conversationsService.createDirectConversation(req.user.id, dto);
   }
 
+  @Post('create-group')
+  @UseInterceptors(
+    FileInterceptor('avatar', multerConversationConfig), // "avatar" = ключ в FormData
+  )
+  async createGroup(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: CreateGroupConversationDto,
+    @Req() req: any,
+  ) {
+    const creatorId = req.user.id;
+
+    // Если файл пришёл, сохраняем имя в DTO
+    if (file) {
+      body.groupAvatar = file.filename;
+    }
+
+    return this.conversationsService.createGroupConversation(creatorId, body);
+  }
+
+
+
+  
   // Проверка — админ ли пользователь в группе
   @Get('/is-group-admin/:conversationId')
   async isAdmin(@Param('conversationId') id: string, @Req() req: any) {
@@ -33,12 +58,13 @@ export class ConversationsController {
   }
 
   // Заблокировать (забанить) пользователя в группе
-  @Post('/groups/:groupId/ban/:userId')
+  @Patch('/groups/:groupId/ban/:userId')
   async banUser(
     @Param('groupId') groupId: string,
     @Param('userId') userId: string,
     @Req() req: any,
   ) {
+    console.log('ban user:', userId)
     return this.conversationsService.banUser(groupId, userId, req.user.id);
   }
 
@@ -49,7 +75,7 @@ export class ConversationsController {
   }
 
   // Назначить пользователя админом
-  @Post('/groups/:groupId/make-admin/:userId')
+  @Patch('/groups/:groupId/make-admin/:userId')
   async makeAdmin(
     @Param('groupId') groupId: string,
     @Param('userId') userId: string,

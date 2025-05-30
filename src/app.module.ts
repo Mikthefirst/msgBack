@@ -11,6 +11,7 @@ import { ConversationToUser } from './conversations/entities/conv-to-user.entity
 import { Message } from './messages/entities/message.entity';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from './chat/chat.module';
+import { ImageServiceModule } from './image-service/image-service.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,13 +26,14 @@ import { ChatModule } from './chat/chat.module';
       username: process.env.DB_USERNAME,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      logging: true,
+      logging: false,
       entities: [User, Message, Conversation, ConversationToUser],
     }),
     UsersModule,
     AuthModule,
     ConversationsModule,
     MessagesModule,
+    ImageServiceModule,
     ChatModule,
   ],
   controllers: [],
