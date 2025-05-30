@@ -59,6 +59,18 @@ export class ConversationsService {
     }
   }
 
+  async getConversationMemberCount(conversationId: string): Promise<number> {
+    try {
+      const count = await this.ctuRepo.count({
+        where: { conversation: { id: conversationId } },
+      });
+      return count;
+    } catch (error) {
+      console.error('Error counting conversation members:', error);
+      throw new BadRequestException('Could not count conversation members');
+    }
+  }
+  
   async getConversation(userId: string) {
     const convToUsers = await this.ctuRepo.find({
       where: { user: { id: userId } },

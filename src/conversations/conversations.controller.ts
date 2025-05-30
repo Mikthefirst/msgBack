@@ -62,4 +62,9 @@ export class ConversationsController {
   async getUsersWithDirectChats(@Req() req: any) {
     return this.conversationsService.getUsersWithDirectChats(req.user.id);
   }
+
+  @Get(':id/member-count')
+  async getMemberCount(@Param('id') conversationId: string) {
+    return this.conversationsService.getConversationMemberCount(conversationId);
+  }
 }
