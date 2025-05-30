@@ -58,12 +58,13 @@ export class ConversationsController {
   }
 
   // Заблокировать (забанить) пользователя в группе
-  @Post('/groups/:groupId/ban/:userId')
+  @Patch('/groups/:groupId/ban/:userId')
   async banUser(
     @Param('groupId') groupId: string,
     @Param('userId') userId: string,
     @Req() req: any,
   ) {
+    console.log('ban user:', userId)
     return this.conversationsService.banUser(groupId, userId, req.user.id);
   }
 
@@ -74,7 +75,7 @@ export class ConversationsController {
   }
 
   // Назначить пользователя админом
-  @Post('/groups/:groupId/make-admin/:userId')
+  @Patch('/groups/:groupId/make-admin/:userId')
   async makeAdmin(
     @Param('groupId') groupId: string,
     @Param('userId') userId: string,

@@ -141,6 +141,7 @@ export class ConversationsService {
       avatar: rel.user.avatar,
       role: rel.isAdmin ? 'admin' : 'user',
       joinedAt: rel.joinedAt,
+      isAdmin: rel.isAdmin||false, 
       isBlocked: rel.isBlocked || false,
     }));
   }

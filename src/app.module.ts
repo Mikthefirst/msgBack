@@ -26,7 +26,7 @@ import { ImageServiceModule } from './image-service/image-service.module';
       username: process.env.DB_USERNAME,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      logging: true,
+      logging: false,
       entities: [User, Message, Conversation, ConversationToUser],
     }),
     UsersModule,
