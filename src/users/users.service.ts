@@ -27,6 +27,10 @@ export class UsersService {
       if (nicknameExists)
         throw new ConflictException('Nickname already in use');
 
+      if (createUserDto.nickname[0] !== '@')
+      {
+        createUserDto.nickname = '@' + createUserDto.nickname;
+      }
       const user = this.usersRepository.save(createUserDto);
 
       return user;

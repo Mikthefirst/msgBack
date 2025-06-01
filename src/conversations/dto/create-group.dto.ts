@@ -10,6 +10,10 @@ export class CreateGroupConversationDto {
 
   @IsOptional()
   @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
   groupAvatar?: string; // мы будем сохранять имя файла
 
   @IsOptional()

@@ -1,0 +1,19 @@
+// search.controller.ts
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { SearchService } from './search.service';
+
+@Controller('search')
+export class SearchController {
+  constructor(private readonly searchService: SearchService) {}
+
+  @Get('users')
+  searchUsers(@Query('term') term: string) {
+    return this.searchService.searchUsers(term.trim());
+  }
+
+
+  @Get('rooms/name')
+  searchRoomsByNickname(@Query('term') term: string) {
+    return this.searchService.searchGroups(term.trim());
+  }
+}

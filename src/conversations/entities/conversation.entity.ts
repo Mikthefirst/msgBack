@@ -17,8 +17,12 @@ export class Conversation {
   @Column({ unique: true, length: 80 })
   group_nickname: string;
 
+  @Column({ nullable: false})
   isGroup: boolean;
 
+  @Column({ nullable: true })
+  description?: string  
+    
   @Column({ nullable: true, length: 100 })
   groupName?: string;
 
@@ -42,17 +46,3 @@ export class Conversation {
   createdBy: User;
 }
 
-
-
-
-/*
-export interface Conversation {
-  id: string;
-  group_nickname: string;
-  participants: User[];
-  lastMessage_ID?: message_id;
-  isGroup: boolean;
-  groupName?: string;
-  groupAvatar?: string;
-}
-*/

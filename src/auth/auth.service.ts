@@ -15,6 +15,9 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<any> {
     console.log(email, pass);
     const user = await this.usersService.findOneByEmail(email);
+    //fix that
+    //const user = await this.usersService.findOneByEmail('john@example.com');
+
     if (user && user.password === pass) {
       const { id, email, username, role } = user;
       return { id, email, username, role };
@@ -34,6 +37,7 @@ export class AuthService {
       role: checkUser.role,
       username: checkUser.username,
     };
+    console.log('login:', payload);
     return {
       email: checkUser.email,
       id: checkUser.id,

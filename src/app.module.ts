@@ -12,6 +12,9 @@ import { Message } from './messages/entities/message.entity';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from './chat/chat.module';
 import { ImageServiceModule } from './image-service/image-service.module';
+import { SearchModule } from './search/search.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,6 +38,7 @@ import { ImageServiceModule } from './image-service/image-service.module';
     MessagesModule,
     ImageServiceModule,
     ChatModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [ChatGateway],
