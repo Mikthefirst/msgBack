@@ -37,15 +37,14 @@ export class ConversationsService {
       const user1 = await this.userRepo.findOneByOrFail({ id: userId });
       const user2 = await this.userRepo.findOneByOrFail({ id: dto.user2Id });
       let addDog = false;
-      if (user1.nickname[0] !== '@')
-        addDog = true;
-        //creation of chat
-        const chat = this.convRepo.create({
-          group_nickname: `${addDog?'':'@'}${user1.nickname}-${user2.nickname}-${randomUUID().toString().slice(0, 4)}`,
-          groupName: `${user1.nickname}*${user2.nickname}`,
-          isGroup: false,
-          createdBy: user1,
-        });
+      if (user1.nickname[0] !== '@') addDog = true;
+      //creation of chat
+      const chat = this.convRepo.create({
+        group_nickname: `${addDog ? '' : '@'}${user1.nickname}-${user2.nickname}-${randomUUID().toString().slice(0, 4)}`,
+        groupName: `${user1.nickname}*${user2.nickname}`,
+        isGroup: false,
+        createdBy: user1,
+      });
       await this.convRepo.save(chat);
 
       //conv-to-usr
@@ -80,7 +79,7 @@ export class ConversationsService {
       relations: ['conversation', 'conversation.createdBy'],
     });
 
-    console.log('convToUser: ', convToUsers, '\nuser: ',userId)
+    console.log('convToUser: ', convToUsers, '\nuser: ', userId);
     const conversations: any[] = [];
     for (const entry of convToUsers) {
       const conv = entry.conversation;
@@ -299,7 +298,8 @@ export class ConversationsService {
     creatorId: string,
     dto: CreateGroupConversationDto,
   ): Promise<Conversation> {
-    let { groupName, groupNickname, groupAvatar, participantIds, description } = dto;
+    let { groupName, groupNickname, groupAvatar, participantIds, description } =
+      dto;
 
     // 1) Проверить, что у создателя валидный пользователь
     const creator = await this.userRepo.findOne({ where: { id: creatorId } });
@@ -316,14 +316,14 @@ export class ConversationsService {
       }
     }
 
-    if (groupNickname[0] === '$') {}
-    else groupNickname = '$' + groupNickname;
+    if (groupNickname[0] === '$') {
+    } else groupNickname = '$' + groupNickname;
     // 3) Создаём Conversation как группу
     const group = this.convRepo.create({
       group_nickname: groupNickname,
       groupName,
       groupAvatar: groupAvatar || null,
-      description: description || "Отсутствует описание",
+      description: description || 'Отсутствует описание',
       isGroup: true,
       createdBy: creator,
     });
@@ -379,5 +379,30 @@ export class ConversationsService {
       }));
 
     return common;
+  }
+
+  async addUserToGroup(conversationId: string, userId: string) {
+    const conversation = await this.convRepo.findOne({
+      where: { id: conversationId, isGroup: true },
+    });
+    if (!conversation) throw new NotFoundException('Group not found');
+
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    // Check if already a member
+    const existing = await this.ctuRepo.findOne({
+      where: { user: { id: userId }, conversation: { id: conversationId } },
+    });
+    if (existing) return conversation;
+
+    const relation = this.ctuRepo.create({
+      user,
+      conversation,
+      isAdmin: false,
+    });
+
+    await this.ctuRepo.save(relation);
+    return conversation;
   }
 }

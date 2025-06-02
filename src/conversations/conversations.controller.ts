@@ -107,4 +107,13 @@ export class ConversationsController {
     const currentUserId = req.user.id;
     return this.conversationsService.getCommonChats(currentUserId, userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('join-group')
+  async joinGroup(@Req() req, @Body() body: { conversationId: string }) {
+    return this.conversationsService.addUserToGroup(
+      body.conversationId,
+      req.user.id,
+    );
+  }
 }

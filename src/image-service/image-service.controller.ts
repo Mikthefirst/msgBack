@@ -55,12 +55,13 @@ export class ImageServiceController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get('get-conversation-avatar/:conversationId')
   async getConversationAvatar(
     @Param('conversationId') conversationId: string,
     @Res() res,
   ) {
+    console.log('req was');
     return this.imageServiceService.sendConversationAvatar(conversationId, res);
   }
 }
