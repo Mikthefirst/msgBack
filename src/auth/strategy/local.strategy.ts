@@ -18,6 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       nickname: user.nickname,
       role: user.role,
+      email: user.email
     };
   }
 }

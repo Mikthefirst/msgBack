@@ -26,24 +26,19 @@ export class AuthService {
   }
 
   async login(user: JwtUser) {
-    const checkUser = await this.usersService.findOneByEmail(user.email);
-    if (!checkUser) {
-      throw new NotFoundException('User not found');
-    }
-  
     const payload = {
-      email: checkUser.email,
-      sub: checkUser.id,
-      role: checkUser.role,
-      username: checkUser.username,
+      email: user.email,
+      sub: user.id,
+      role: user.role,
     };
     console.log('login:', payload);
     return {
-      email: checkUser.email,
-      id: checkUser.id,
+      email: user.email,
+      id: user.id,
       access_token: this.jwtService.sign(payload),
     };
   }
+
 
   async register(createUserDto: CreateUserDto) {
     // Проверяем, существует ли пользователь
