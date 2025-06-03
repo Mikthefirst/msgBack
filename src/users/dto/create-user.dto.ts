@@ -7,6 +7,7 @@ import {
   IsEnum,
   isString,
 } from 'class-validator';
+import { Role } from 'src/enums/role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -14,7 +15,9 @@ export class CreateUserDto {
   username: string;
 
   @IsString()
-  @Length(1, 40, { message: 'Nickname must be between 1 and 40 characters and Unique' })
+  @Length(1, 40, {
+    message: 'Nickname must be between 1 and 40 characters and Unique',
+  })
   nickname: string;
 
   @IsEmail({}, { message: 'Please provide a valid email address' })
@@ -42,4 +45,8 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   avatar?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }

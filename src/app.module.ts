@@ -13,7 +13,7 @@ import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from './chat/chat.module';
 import { ImageServiceModule } from './image-service/image-service.module';
 import { SearchModule } from './search/search.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -39,6 +39,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ImageServiceModule,
     ChatModule,
     SearchModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [ChatGateway],

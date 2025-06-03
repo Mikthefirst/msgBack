@@ -61,7 +61,6 @@ export class ImageServiceController {
     @Param('conversationId') conversationId: string,
     @Res() res,
   ) {
-    console.log('req was');
     return this.imageServiceService.sendConversationAvatar(conversationId, res);
   }
 }

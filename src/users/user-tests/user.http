@@ -15,3 +15,18 @@ Content-Type: application/json
 ###
 # @name getUsers
 GET http://localhost:3000/users
+
+
+### 
+# @name adminCreation
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "admin", 
+  "nickname": "admin", 
+  "email": "admin@gmail.com", 
+  "password": "admin", 
+  "full_name": "Admin Adminovich", 
+"role": "admin"
+}

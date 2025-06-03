@@ -16,7 +16,7 @@ import { Message } from 'src/messages/entities/message.entity';
     TypeOrmModule.forFeature([ConversationLastMessage]),
     TypeOrmModule.forFeature([Message]),
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, ConversationsService],
   controllers: [ConversationsController],
   providers: [ConversationsService],
 })
