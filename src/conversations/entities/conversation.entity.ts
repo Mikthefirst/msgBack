@@ -17,18 +17,21 @@ export class Conversation {
   @Column({ unique: true, length: 80 })
   group_nickname: string;
 
-  @Column({ nullable: false})
+  @Column({ nullable: false })
   isGroup: boolean;
 
   @Column({ nullable: true })
-  description?: string  
-    
+  description?: string;
+
   @Column({ nullable: true, length: 100 })
   groupName?: string;
 
   @Column({ nullable: true })
   groupAvatar?: string;
 
+  @Column({ nullable: true })
+  Banned?: boolean;
+  
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

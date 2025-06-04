@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
@@ -42,7 +42,7 @@ export class AdminController {
   @Get('groups/:groupId/messages')
   @Roles(Role.ADMIN)
   getGroupMessages(@Param('groupId') groupId: string) {
-    console.log('message req was')
+    console.log('message req was');
     return this.adminService.getGroupMessages(groupId);
   }
 
@@ -50,5 +50,17 @@ export class AdminController {
   @Roles(Role.ADMIN)
   async getNewGroups(@Query('since') since: string) {
     return this.adminService.getNewGroups(new Date(since));
+  }
+
+  @Patch('groups/:groupId/ban')
+  @Roles(Role.ADMIN)
+  async banGroup(@Param('groupId') groupId: string) {
+    return this.adminService.banGroup(groupId);
+  }
+
+  @Patch('groups/:groupId/unban')
+  @Roles(Role.ADMIN)
+  async unbanGroup(@Param('groupId') groupId: string) {
+    return this.adminService.UnbanGroup(groupId);
   }
 }

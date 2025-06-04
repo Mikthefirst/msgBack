@@ -37,12 +37,11 @@ export class AdminService {
   }
 
   async getGroupMessages(groupId: string) {
-     return this.msgRepo.find({
+    return this.msgRepo.find({
       where: { conversation: { id: groupId } },
       relations: ['sender'],
       order: { timestamp: 'ASC' },
     });
-
   }
   async getNewGroups(since: Date): Promise<Conversation[]> {
     if (isNaN(since.getTime())) {
@@ -52,5 +51,39 @@ export class AdminService {
     return this.convRepo.find({
       where: { CreatedAt: MoreThan(since) },
     });
+  }
+
+  async banGroup(groupId: string): Promise<{ message: string }> {
+    const group = await this.convRepo.findOne({
+      where: { id: groupId, isGroup: true },
+    });
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    group.Banned = true;
+    await this.convRepo.save(group);
+
+    return {
+      message: `Group ${group.groupName || group.group_nickname} has been banned.`,
+    };
+  }
+
+  async UnbanGroup(groupId: string): Promise<{ message: string }> {
+    const group = await this.convRepo.findOne({
+      where: { id: groupId, isGroup: true },
+    });
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    group.Banned = false;
+    await this.convRepo.save(group);
+
+    return {
+      message: `Group ${group.groupName || group.group_nickname} has been unbanned.`,
+    };
   }
 }
