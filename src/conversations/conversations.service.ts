@@ -79,7 +79,6 @@ export class ConversationsService {
       relations: ['conversation', 'conversation.createdBy'],
     });
 
-    console.log('convToUser: ', convToUsers, '\nuser: ', userId);
     const conversations: any[] = [];
     for (const entry of convToUsers) {
       const conv = entry.conversation;

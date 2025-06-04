@@ -136,6 +136,42 @@ export class ImageServiceService {
     );
     res.sendFile(filePath);
   }
+
+  async handleMessageFileUpload(
+    file: Express.Multer.File,
+    conversationId: string,
+    userId: string,
+  ) {
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    const conversation = await this.convRepo.findOne({
+      where: { id: conversationId },
+    });
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    const isMember = await this.ctuRepo.findOne({
+      where: {
+        conversation: { id: conversationId },
+        user: { id: userId },
+      },
+    });
+    if (!isMember)
+      throw new ForbiddenException('You are not a member of this conversation');
+
+    return {
+      message: 'File uploaded successfully',
+      filename: file.filename,
+      path: file.path,
+      size: file.size,
+      mimetype: file.mimetype,
+      url: `/image-service/get-message-file/${file.filename}`,
+    };
+  }
+
+  async sendMessageFile(filename: string, res: Response) {
+    const filePath = path.join(process.cwd(), 'uploads/chat-content', filename);
+    res.sendFile(filePath);
+  }
 }
 
 /*

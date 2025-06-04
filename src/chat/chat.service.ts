@@ -26,18 +26,20 @@ export class ChatService {
     conversationId: string,
     content: string,
     type: msgType = msgType.TEXT,
+    fileUrl?: string, // новое
   ) {
     const sender = await this.userRepository.findOneBy({ id: userId });
     if (!sender) throw new NotFoundException('Sender not found');
 
-    const conversation = await this.convRepository.findOneBy({id: conversationId,});
+    const conversation = await this.convRepository.findOneBy({id: conversationId});
     if (!conversation) throw new NotFoundException('Conversation not found');
 
     const message = this.msgRepository.create({
       sender,
       conversation,
       content,
-      type: type, 
+      type: type,
+      fileUrl: fileUrl || null
     });
     const saved = await this.msgRepository.save(message);
     this.chatGateway.sendMessageToRoom(conversationId, saved);

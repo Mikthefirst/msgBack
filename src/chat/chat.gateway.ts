@@ -196,4 +196,45 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       throw new ForbiddenException('Invalid token');
     }
   }
+
+  @SubscribeMessage('send-message-file')
+  async handleSendFileMessage(
+    client: Socket,
+    payload: {
+      conversationId: string;
+      content: string;
+      fileUrl: string;
+      type: 'file' | 'image';
+    },
+  ): Promise<void> {
+    try {
+      const cookieHeader = client.handshake.headers.cookie;
+      let accessToken = null;
+
+      if (cookieHeader) {
+        const cookies = cookieHeader.split(';').map((c) => c.trim());
+        const tokenCookie = cookies.find((c) => c.startsWith('access_token='));
+        if (tokenCookie) {
+          accessToken = tokenCookie.split('=')[1];
+        }
+      }
+
+      const decodedToken = this.jwtService.decode(accessToken);
+      if (!decodedToken) throw new ForbiddenException('Invalid token');
+
+      const userId = decodedToken.sub;
+      const savedMessage = await this.chatService.sendMessage(
+        userId,
+        payload.conversationId,
+        payload.content,
+        payload.type as msgType,
+        payload.fileUrl,
+      );
+      // Отправляем обратно участникам
+      this.server.to(payload.conversationId).emit('new-message', savedMessage);
+    } catch (error) {
+      console.error(error);
+      throw new ForbiddenException('File message failed');
+    }
+  }
 }

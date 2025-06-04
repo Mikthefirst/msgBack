@@ -15,6 +15,7 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { multerConfig } from './config/file-upload.config';
 import { JwtUser } from 'src/types/userType';
 import { multerConversationConfig } from "./config/file-upload.conversation.config";
+import { multerChatContentConfig } from "./config/ChatContent.config";
 
 
 @Controller('image-service')
@@ -55,12 +56,37 @@ export class ImageServiceController {
     );
   }
 
-  //@UseGuards(JwtAuthGuard)
+  // ===============================================
+  // Контент (групп/чатов)
+  // ===============================================
+
   @Get('get-conversation-avatar/:conversationId')
   async getConversationAvatar(
     @Param('conversationId') conversationId: string,
     @Res() res,
   ) {
     return this.imageServiceService.sendConversationAvatar(conversationId, res);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('upload-message-file/:conversationId')
+  @UseInterceptors(FileInterceptor('file', multerChatContentConfig))
+  async uploadMessageFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('conversationId') conversationId: string,
+    @Request() req,
+  ) {
+    const user: JwtUser = req.user;
+    console.log('upload req was:   ', user);
+    return this.imageServiceService.handleMessageFileUpload(
+      file,
+      conversationId,
+      user.id,
+    );
+  }
+
+  @Get('get-message-file/:filename')
+  async getMessageFile(@Param('filename') filename: string, @Res() res) {
+    return this.imageServiceService.sendMessageFile(filename, res);
   }
 }
