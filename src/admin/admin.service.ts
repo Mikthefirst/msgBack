@@ -96,12 +96,14 @@ export class AdminService {
     });
   }
 
-  async banUser(userId: string): Promise<{ message: string }> {
+  async banUser(userId: string, reason: string): Promise<{ message: string }> {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) throw new Error('User not found');
 
     user.isBlocked = true;
+    user.banReason = reason;
     await this.userRepo.save(user);
+
     return { message: `User ${user.nickname} has been banned.` };
   }
 

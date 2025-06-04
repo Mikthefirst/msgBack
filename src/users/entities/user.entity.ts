@@ -48,6 +48,9 @@ export class User {
   @Column({ nullable: true })
   isBlocked?: boolean;
 
+  @Column({ nullable: true })
+  banReason?: string;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

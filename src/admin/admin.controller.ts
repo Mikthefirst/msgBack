@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
@@ -74,8 +74,11 @@ export class AdminController {
 
   @Patch('user/ban/:userId')
   @Roles(Role.ADMIN)
-  async banUser(@Param('userId') userId: string) {
-    return this.adminService.banUser(userId);
+  async banUser(
+    @Param('userId') userId: string,
+    @Body('reason') reason: string,
+  ) {
+    return this.adminService.banUser(userId, reason);
   }
 
   @Patch('user/unban/:userId')
