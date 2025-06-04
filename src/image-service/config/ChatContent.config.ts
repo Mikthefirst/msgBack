@@ -13,16 +13,8 @@ export const multerChatContentConfig = {
     },
   }),
   fileFilter: (req, file, callback) => {
-    const allowedTypes = [
-      'image/jpeg',
-      'image/png',
-      'application/pdf',
-      'image/gif',
-      'image/jpg',
-    ];
-    allowedTypes.includes(file.mimetype)
-      ? callback(null, true)
-      : callback(new Error('Invalid file type'), false);
+    console.log('Uploading file with mimetype:', file.mimetype);
+    callback(null, true); // допускаем все MIME-типы
   },
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB
