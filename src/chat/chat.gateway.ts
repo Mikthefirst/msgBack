@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { Message } from 'src/messages/entities/message.entity';
 import { JwtService } from '@nestjs/jwt';
+import { msgType } from 'src/enums/msg.enum';
 
 
 @WebSocketGateway({
@@ -66,12 +67,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.join(conversationId);
         this.userRooms.set(client.id, conversationId);
       }
-     
     } catch (error) {
-      new ForbiddenException("wrong token")
+      new ForbiddenException('wrong token');
     }
     //console.log('join-room: ', client.handshake.headers.cookie);
-  
   }
 
   @SubscribeMessage('leave-room')
@@ -113,7 +112,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       const decodedToken = this.jwtService.decode(accessToken);
       if (decodedToken) {
-       
         const { content } = payload;
         const conversationId = this.userRooms.get(client.id);
 
@@ -123,13 +121,79 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           conversationId,
           content,
         );
-      
       }
     } catch (error) {
       new ForbiddenException('wrong token');
     }
+  }
 
+  @SubscribeMessage('send-message-code')
+  async handleSendCodeMessage(
+    client: Socket,
+    payload: { conversationId: string; content: string },
+  ): Promise<void> {
+    console.log(
+      `[handleSendCodeMessage] client.id=${client.id}, time=${new Date().toISOString()}`,
+    );
+    try {
+      const cookieHeader = client.handshake.headers.cookie;
+      let accessToken = null;
+      let tokenCookie, cookies;
+      if (cookieHeader) {
+        cookies = cookieHeader.split(';').map((c) => c.trim());
+        tokenCookie = cookies.find((c) => c.startsWith('access_token='));
 
-    
+        if (tokenCookie) {
+          accessToken = tokenCookie.split('=')[1];
+        }
+      }
+
+      const decodedToken = this.jwtService.decode(accessToken);
+      if (decodedToken) {
+        const { conversationId, content } = payload;
+
+        const savedMessage: Message = await this.chatService.sendCodeMessage(
+          decodedToken.sub,
+          conversationId,
+          content,
+        );
+
+        console.log('Saved code message:', savedMessage);
+      }
+    } catch (error) {
+      throw new ForbiddenException('Invalid token for send-message-code');
+    }
+  }
+
+  @SubscribeMessage('send-message-status')
+  async handleSendStatus(
+    client: Socket,
+    payload: { conversationId: string; content: string },
+  ): Promise<void> {
+    try {
+      const cookieHeader = client.handshake.headers.cookie;
+      let accessToken = null;
+      let tokenCookie, cookies;
+      if (cookieHeader) {
+        cookies = cookieHeader.split(';').map((c) => c.trim());
+        tokenCookie = cookies.find((c) => c.startsWith('access_token='));
+        if (tokenCookie) {
+          accessToken = tokenCookie.split('=')[1];
+        }
+      }
+
+      const decodedToken = this.jwtService.decode(accessToken);
+      if (decodedToken) {
+        const conversationId = this.userRooms.get(client.id);
+        const savedMessage = await this.chatService.sendMessage(
+          decodedToken.sub,
+          conversationId,
+          payload.content,
+          msgType.status, // тип "status"
+        );
+      }
+    } catch (error) {
+      throw new ForbiddenException('Invalid token');
+    }
   }
 }

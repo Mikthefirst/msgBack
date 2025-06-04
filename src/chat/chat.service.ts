@@ -21,7 +21,34 @@ export class ChatService {
     private convRepository: Repository<Conversation>,
   ) {}
 
-  async sendMessage(userId: string, conversationId: string, content: string) {
+  async sendMessage(
+    userId: string,
+    conversationId: string,
+    content: string,
+    type: msgType = msgType.TEXT,
+  ) {
+    const sender = await this.userRepository.findOneBy({ id: userId });
+    if (!sender) throw new NotFoundException('Sender not found');
+
+    const conversation = await this.convRepository.findOneBy({id: conversationId,});
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    const message = this.msgRepository.create({
+      sender,
+      conversation,
+      content,
+      type: type, 
+    });
+    const saved = await this.msgRepository.save(message);
+    this.chatGateway.sendMessageToRoom(conversationId, saved);
+    return saved;
+  }
+
+  async sendCodeMessage(
+    userId: string,
+    conversationId: string,
+    content: string,
+  ) {
     const sender = await this.userRepository.findOneBy({ id: userId });
     if (!sender) throw new NotFoundException('Sender not found');
 
@@ -34,7 +61,7 @@ export class ChatService {
       sender,
       conversation,
       content,
-      type: msgType.TEXT, // default or dynamic if needed
+      type: msgType.code,
     });
 
     const saved = await this.msgRepository.save(message);

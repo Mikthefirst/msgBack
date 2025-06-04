@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
+import { JwtUser } from 'src/types/userType';
 
 //@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('admin')
@@ -91,5 +92,15 @@ export class AdminController {
   @Roles(Role.ADMIN)
   async makeUserAdmin(@Param('userId') userId: string) {
     return this.adminService.makeUserAdmin(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('is-admin')
+  async checkIsAdmin(@Req() req) {
+    const user: JwtUser = req.user;
+    if (user.role === Role.ADMIN) {
+      return true;
+    }
+    return false;
   }
 }
