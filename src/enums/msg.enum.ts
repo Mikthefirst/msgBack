@@ -4,5 +4,6 @@ export enum msgType {
   FILE = 'file',
   status = 'status',
   code = 'code',
+  voice = 'voice'
 }
 //['text', 'image', 'file'];
