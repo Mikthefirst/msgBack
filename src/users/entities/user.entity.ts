@@ -45,6 +45,9 @@ export class User {
   })
   role: Role;
 
+  @Column({ nullable: true })
+  isBlocked?: boolean;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

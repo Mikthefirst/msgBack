@@ -63,4 +63,30 @@ export class AdminController {
   async unbanGroup(@Param('groupId') groupId: string) {
     return this.adminService.UnbanGroup(groupId);
   }
+
+  // --- USERS --- //
+
+  @Get('users')
+  @Roles(Role.ADMIN)
+  async getAllUsers() {
+    return this.adminService.getAllUsers();
+  }
+
+  @Patch('user/ban/:userId')
+  @Roles(Role.ADMIN)
+  async banUser(@Param('userId') userId: string) {
+    return this.adminService.banUser(userId);
+  }
+
+  @Patch('user/unban/:userId')
+  @Roles(Role.ADMIN)
+  async unbanUser(@Param('userId') userId: string) {
+    return this.adminService.unbanUser(userId);
+  }
+
+  @Patch('user/make-admin/:userId')
+  @Roles(Role.ADMIN)
+  async makeUserAdmin(@Param('userId') userId: string) {
+    return this.adminService.makeUserAdmin(userId);
+  }
 }

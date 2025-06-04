@@ -6,6 +6,7 @@ import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
 import { ConversationsService } from 'src/conversations/conversations.service';
+import { Role } from 'src/enums/role.enum';
 
 @Injectable()
 export class AdminService {
@@ -85,5 +86,40 @@ export class AdminService {
     return {
       message: `Group ${group.groupName || group.group_nickname} has been unbanned.`,
     };
+  }
+
+  // === USERS ===
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepo.find({
+      order: { CreatedAt: 'DESC' },
+    });
+  }
+
+  async banUser(userId: string): Promise<{ message: string }> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new Error('User not found');
+
+    user.isBlocked = true;
+    await this.userRepo.save(user);
+    return { message: `User ${user.nickname} has been banned.` };
+  }
+
+  async unbanUser(userId: string): Promise<{ message: string }> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new Error('User not found');
+
+    user.isBlocked = false;
+    await this.userRepo.save(user);
+    return { message: `User ${user.nickname} has been unbanned.` };
+  }
+
+  async makeUserAdmin(userId: string): Promise<{ message: string }> {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new Error('User not found');
+
+    user.role = Role.ADMIN;
+    await this.userRepo.save(user);
+    return { message: `User ${user.nickname} is now an admin.` };
   }
 }
