@@ -9,10 +9,11 @@ import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Conversation } from 'src/conversations/entities/conversation.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { ConversationToUser } from 'src/conversations/entities/conv-to-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Message, User, Conversation]),
+    TypeOrmModule.forFeature([Message, User, Conversation, ConversationToUser]),
     AuthModule,
   ],
   providers: [ChatService, ChatGateway],

@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Conversation } from 'src/conversations/entities/conversation.entity'; 
 import { Repository } from 'typeorm';
 import { msgType } from 'src/enums/msg.enum';
+import { ConversationToUser } from 'src/conversations/entities/conv-to-user.entity';
 
 @Injectable()
 export class ChatService {
@@ -19,6 +20,8 @@ export class ChatService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Conversation)
     private convRepository: Repository<Conversation>,
+    @InjectRepository(ConversationToUser)
+    private readonly ctuRepo: Repository<ConversationToUser>,
   ) {}
 
   async sendMessage(
@@ -31,7 +34,9 @@ export class ChatService {
     const sender = await this.userRepository.findOneBy({ id: userId });
     if (!sender) throw new NotFoundException('Sender not found');
 
-    const conversation = await this.convRepository.findOneBy({id: conversationId});
+    const conversation = await this.convRepository.findOneBy({
+      id: conversationId,
+    });
     if (!conversation) throw new NotFoundException('Conversation not found');
 
     const message = this.msgRepository.create({
@@ -39,7 +44,7 @@ export class ChatService {
       conversation,
       content,
       type: type,
-      fileUrl: fileUrl || null
+      fileUrl: fileUrl || null,
     });
     const saved = await this.msgRepository.save(message);
     this.chatGateway.sendMessageToRoom(conversationId, saved);
@@ -71,5 +76,20 @@ export class ChatService {
     this.chatGateway.sendMessageToRoom(conversationId, saved);
 
     return saved;
+  }
+
+  async userHasAccessToConversation(
+    userId: string,
+    conversationId: string,
+  ): Promise<boolean> {
+    const record = await this.ctuRepo.findOne({
+      where: {
+        user: { id: userId },
+        conversation: { id: conversationId },
+      },
+      relations: ['user', 'conversation'],
+    });
+
+    return !!record;
   }
 }
