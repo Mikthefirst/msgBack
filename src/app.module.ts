@@ -31,6 +31,12 @@ import { AdminModule } from './admin/admin.module';
       synchronize: true,
       logging: false,
       entities: [User, Message, Conversation, ConversationToUser],
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
     UsersModule,
     AuthModule,
