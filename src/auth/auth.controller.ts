@@ -20,12 +20,20 @@ export class AuthController {
   async login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const logindata = await this.authService.login(req.user);
     res.cookie('access_token', logindata.access_token, {
-      //httpOnly: true,
       maxAge: 3600000,
-      //sameSite: "strict",
+      secure: true, // обязательно для HTTPS (в том числе на Vercel/Render)
+      sameSite: 'none', // обязательно для кросс-доменных куки
     });
-    res.cookie('email', logindata.email);
-    res.cookie('id', logindata.id);
+    res.cookie('email', logindata.email, {
+      maxAge: 3600000,
+      secure: true, // обязательно для HTTPS (в том числе на Vercel/Render)
+      sameSite: 'none', // обязательно для кросс-доменных куки
+    });
+    res.cookie('id', logindata.id, {
+      maxAge: 3600000,
+      secure: true, // обязательно для HTTPS (в том числе на Vercel/Render)
+      sameSite: 'none', // обязательно для кросс-доменных куки
+    });
 
 
     return { message: 'Login successful', token: logindata.access_token };
@@ -40,8 +48,9 @@ export class AuthController {
       await this.authService.register(createUserDto);
 
     res.cookie('access_token', access_token, {
-      maxAge: 3600000, 
-      httpOnly: true, 
+      maxAge: 3600000,
+      secure: true, // обязательно для HTTPS (в том числе на Vercel/Render)
+      sameSite: 'none', // обязательно для кросс-доменных куки
     });
 
     return {

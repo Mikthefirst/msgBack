@@ -31,12 +31,6 @@ import { AdminModule } from './admin/admin.module';
       synchronize: true,
       logging: false,
       entities: [User, Message, Conversation, ConversationToUser],
-      ssl: true,
-      extra: {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      },
     }),
     UsersModule,
     AuthModule,
@@ -51,3 +45,15 @@ import { AdminModule } from './admin/admin.module';
   providers: [ChatGateway],
 })
 export class AppModule {}
+
+
+/*
+Нужно добавлять это для deploy на render в TypeOrmModule.forRoot({
+
+  ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
+ */
