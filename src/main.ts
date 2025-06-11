@@ -21,7 +21,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`sever is listening on port ${port}`);
 }
 bootstrap();
