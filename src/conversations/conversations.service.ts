@@ -82,6 +82,9 @@ export class ConversationsService {
     const conversations: any[] = [];
     for (const entry of convToUsers) {
       const conv = entry.conversation;
+
+      if (conv.Banned) continue;
+
       const lastMessage = await this.msgRepo.findOne({
         where: { conversation: { id: conv.id } },
         order: { timestamp: 'DESC' },

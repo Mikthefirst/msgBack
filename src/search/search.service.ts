@@ -26,6 +26,7 @@ export class SearchService {
     return this.convRepo
       .createQueryBuilder('conversation')
       .where('conversation.isGroup = :isGroup', { isGroup: true })
+      .andWhere('conversation.Banned IS DISTINCT FROM true') 
       .andWhere(
         new Brackets((qb) => {
           qb.where('conversation.groupName ILIKE :term', {
